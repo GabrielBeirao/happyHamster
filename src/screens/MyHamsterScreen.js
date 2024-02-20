@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Image, Pressable, StyleSheet, Text } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { StatusBar } from 'expo-status-bar';
+import * as Animatable from 'react-native-animatable'
 
 export default function MyHamsterScreen() {
   const [showAnimation, setShowAnimation] = useState(false);
@@ -34,7 +35,7 @@ export default function MyHamsterScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image source={require("../assets/images/LogoHappyHamster.png")} style={styles.logo} />
+        <Animatable.Image animation="flipInY" source={require("../assets/images/LogoHappyHamster.png")} style={styles.logo} />
       </View>
       <View style={styles.animationContainer}>
         {showAnimation && (
