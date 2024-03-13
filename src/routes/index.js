@@ -89,7 +89,7 @@ export function MainTabNavigator() {
     >
       {tabArr.map((item, index) => {
         return(
-          <Tab.Screen name={item.route} component={item.component} 
+          <Tab.Screen name={item.route} component={item.component} key={item.route}
           options={{
             tabBarShowLabel: false,
             //tabBarLabel: item.label,

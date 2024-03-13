@@ -20,8 +20,11 @@ export default function Login() {
 
     const logar = async () => {
         try {
+        //await AsyncStorage.removeItem('userSalvos')
+
           // Recupera os dados de usuários do AsyncStorage
           const usuariosVetor = JSON.parse(await AsyncStorage.getItem('userSalvos')) || [];
+          console.log("usuarios vetor: ", usuariosVetor)
           
           // Verifica se as credenciais de login correspondem a algum usuário
           const usuarioLogado = usuariosVetor.find(user => user.username === nomeLogin && user.password === senhaLogin);
