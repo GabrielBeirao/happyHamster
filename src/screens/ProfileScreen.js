@@ -1,47 +1,41 @@
+
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function PerfilScreen() {
-    const [userData, setUserData] = useState(null);
+export default function ProfileScreen() {
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const fetchUserData = async () => {
+        const fetchUser = async () => {
             try {
-                const userDataJSON = await AsyncStorage.getItem('userSalvos');
-                console.log("usuarios no vetor: ", userDataJSON)
-                if (userDataJSON) {
-                    const userData = JSON.parse(userDataJSON);
-                    setUserData(userData);
+                const userData = await AsyncStorage.getItem('user');
+                if (userData) {
+                    const parsedUser = JSON.parse(userData);
+                    setUser(parsedUser);
                 }
             } catch (error) {
-                console.error('Erro ao buscar os dados do usuário:', error);
+                console.error('Erro ao buscar usuário:', error);
             }
         };
 
-        fetchUserData();
+        fetchUser();
     }, []);
-
-    if (!userData) {
-        return (
-            <View style={styles.container}>
-                <Text>Loading...</Text>
-            </View>
-        );
-    }
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Perfil do Usuário</Text>
-            <View style={styles.userInfoContainer}>
-                <Text>Nome de usuário: {userData.username}</Text>
-                <Text>Email: {userData.email}</Text>
-                <Text>Telefone: {userData.telefone || 'Não fornecido'}</Text>
-                <Text>Nickname: {userData.nickname || 'Não fornecido'}</Text>
-                <Text>Gênero: {userData.genere || 'Não fornecido'}</Text>
-                <Text>Data de Nascimento: {userData.birthdate || 'Não fornecido'}</Text>
-                <Text>Imagem do Avatar: {userData.avatarImage || 'Não fornecido'}</Text>
-            </View>
+            <Text style={styles.title}>Profile Information</Text>
+            {user && (
+                <>
+                    <Text style={styles.label}>Name: {user.username || 'Não fornecido'}</Text>
+                    <Text style={styles.label}>Email: {user.email || 'Não fornecido'}</Text>
+                    <Text style={styles.label}>Nickname: {user.nickname || 'Não fornecido'}</Text>
+                    <Text style={styles.label}>Gênero: {user.genere || 'Não fornecido'}</Text>
+                    <Text style={styles.label}>Data de Nascimento: {user.birthdate || 'Não fornecido'}</Text>
+                    <Text style={styles.label}>Imagem do Avatar: {user.avatarImage || 'Não fornecido'}</Text>
+
+                </>
+            )}
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("EditProfileScreen")}>
                 <Text style={styles.buttonText}>Editar Perfil</Text>
             </TouchableOpacity>
