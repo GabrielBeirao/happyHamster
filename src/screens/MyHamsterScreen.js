@@ -102,5 +102,7 @@ const styles = StyleSheet.create({
   counterText: {
     fontSize: 20,
     fontWeight: 'bold',
+    marginBottom: 130,
+    bottom: '40%'
   },
 });
