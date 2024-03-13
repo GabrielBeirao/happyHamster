@@ -10,6 +10,7 @@ export default function FirstAccess() {
     const navigation = useNavigation();
     const route = useRoute();
     const { newUser } = route.params; // Obtenha o novo usuário dos parâmetros de rota
+    console.log("new user: ", newUser)
     const [nickname, setNickname] = useState(newUser.nickname); // Inicialize os estados com os valores passados ​​nos parâmetros
     const [genere, setGenere] = useState(newUser.genere);
     const [birthdate, setBirthdate] = useState(newUser.birthdate ? new Date(newUser.birthdate) : new Date()); // Se birthdate não estiver definido, use a data atual
@@ -18,9 +19,9 @@ export default function FirstAccess() {
     const cadastrarFirstAcees = async () => {
         try {
             // Salvar a data de nascimento
-            await AsyncStorage.setItem('birthdate', birthdate.toString());
-            await AsyncStorage.setItem('nickname', nickname);
-            await AsyncStorage.setItem('genere', genere);
+            newUser.birthdate = birthdate.toString()
+            newUser.nickname = nickname
+            newUser.genere = genere
             
             // Navegar para a próxima tela
             navigation.navigate('AvatarScreen', {

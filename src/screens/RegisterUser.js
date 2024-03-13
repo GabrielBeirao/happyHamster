@@ -14,19 +14,14 @@ export default function RegisterUser() {
 
     const cadastrar = async () => {
         try {
-            // Recupera os dados de usuários do AsyncStorage
-            const usuariosVetor = JSON.parse(await AsyncStorage.getItem('userSalvos')) || [];
-
             // Cria um novo usuário
             const newUser = {
                 username: nomeInput,
                 password: senhaInput,
                 email: emailInput,
-                telefone: '',
-                dispositivos: [],
-                nickname: '', // Adicione o campo de nickname ao novo usuário
-                genere: '', // Adicione o campo de genere ao novo usuário
-                birthdate: '', // Adicione o campo de birthdate ao novo usuário
+                nickname: '', 
+                genere: '', 
+                birthdate: '', 
                 avatarImage: '' 
             };
 
@@ -34,12 +29,6 @@ export default function RegisterUser() {
             //newUser.nickname = ''; // Inicialmente deixe vazio
             //newUser.genere = '';
             //newUser.birthdate = '';
-            // Adiciona o novo usuário ao vetor de usuários
-            usuariosVetor.push(newUser);
-
-            // Salva os dados atualizados no AsyncStorage
-            await AsyncStorage.setItem('userSalvos', JSON.stringify(usuariosVetor));
-
             // Navegar para a próxima tela, passando os dados como parâmetros
             navigation.navigate('FirstAccess', {
                 newUser: newUser // Passa o novo usuário como parâmetro

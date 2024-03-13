@@ -9,6 +9,7 @@ export default function PerfilScreen() {
         const fetchUserData = async () => {
             try {
                 const userDataJSON = await AsyncStorage.getItem('userSalvos');
+                console.log("usuarios no vetor: ", userDataJSON)
                 if (userDataJSON) {
                     const userData = JSON.parse(userDataJSON);
                     setUserData(userData);

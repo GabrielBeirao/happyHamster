@@ -31,9 +31,10 @@ const avatarList = [
     require('../assets/images/avatarList/21.png')
 ];
 
-export default function AvatarScreen({route}) {
+export default function AvatarScreen({ route }) {
     const navigation = useNavigation();
-    const { name, email, password, newUser } = route.params;
+    const { newUser } = route.params;
+    console.log("new user: ", newUser)
     const [image, setImage] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedAvatar, setSelectedAvatar] = useState(null);
@@ -49,7 +50,7 @@ export default function AvatarScreen({route}) {
             if (selectedImage) {
                 // Salvar a imagem do avatar no objeto newUser
                 newUser.avatarImage = selectedImage;
-                
+
                 // Salvar a imagem do avatar no AsyncStorage (se necessário)
                 await AsyncStorage.setItem('user', JSON.stringify(newUser));
             } else {
@@ -57,6 +58,15 @@ export default function AvatarScreen({route}) {
                 // tratar isso de acordo com o que for apropriado para sua aplicação.
                 console.log('Nenhum avatar selecionado');
             }
+            
+            // Recupera os dados de usuários do AsyncStorage
+            const usuariosVetor = JSON.parse(await AsyncStorage.getItem('userSalvos')) || [];
+            // Adiciona o novo usuário ao vetor de usuários
+            usuariosVetor.push(newUser);
+
+            // Salva os dados atualizados no AsyncStorage
+            await AsyncStorage.setItem('userSalvos', JSON.stringify(usuariosVetor));
+
             // Navegar para a tela de login
             navigation.navigate('Login');
         } catch (error) {
@@ -66,12 +76,12 @@ export default function AvatarScreen({route}) {
 
     useEffect(() => {
         (async () => {
-            if (Platform.OS !== 'web') {
+            
                 const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
                 if (status !== 'granted') {
                     alert('Desculpe, precisamos da permissão da câmera para acessar a galeria de imagens.');
                 }
-            }
+            
         })();
     }, []);
 
@@ -82,7 +92,7 @@ export default function AvatarScreen({route}) {
             aspect: [1, 1],
             quality: 1,
         });
-    
+
         if (!result.cancelled) {
             setImage(result.uri);
             setSelectedAvatar(null); // Limpa o avatar selecionado da lista pré-disponibilizada
@@ -96,7 +106,7 @@ export default function AvatarScreen({route}) {
             aspect: [1, 1],
             quality: 1,
         });
-    
+
         if (!result.cancelled) {
             setImage(result.uri);
             setSelectedAvatar(null); // Limpa o avatar selecionado da lista pré-disponibilizada
@@ -119,7 +129,7 @@ export default function AvatarScreen({route}) {
             <Animatable.View animation="fadeInLeft" delay={500} style={styles.containerHeader}>
                 <Text style={styles.message}>Choose your avatar</Text>
                 <TouchableOpacity style={styles.buttonAvatar} onPress={() => setModalVisible(true)}>
-                    <Ionicons name="images-outline" size={24} color="black" style={{ marginRight: 10 }}/>
+                    <Ionicons name="images-outline" size={24} color="black" style={{ marginRight: 10 }} />
                     <Text style={styles.buttonTextAvatar}>Avatar</Text>
                 </TouchableOpacity>
             </Animatable.View>
@@ -129,7 +139,7 @@ export default function AvatarScreen({route}) {
 
                 <View style={styles.buttonsContainer}>
                     <TouchableOpacity style={styles.buttonGalerie} onPress={chooseFromGallery}>
-                        <Ionicons name="images-outline" size={24} color="black" style={{ marginRight: 10 }}/>
+                        <Ionicons name="images-outline" size={24} color="black" style={{ marginRight: 10 }} />
                         <Text style={styles.buttonTextGallery}>Gallery</Text>
                     </TouchableOpacity>
 
@@ -193,7 +203,7 @@ const styles = StyleSheet.create({
         paddingEnd: '5%',
         height: 100
         //marginBottom: '3%',
-        
+
     },
     message: {
         fontSize: 20,
@@ -201,7 +211,7 @@ const styles = StyleSheet.create({
         color: 'black',
         marginBottom: 20
     },
-    messageContainer:{
+    messageContainer: {
         fontSize: 18,
         fontWeight: 'bold',
         color: 'black',
@@ -245,7 +255,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: '50%'
     },
-    buttonTextGallery:{
+    buttonTextGallery: {
         fontSize: 18,
         fontWeight: 'bold'
     },
@@ -260,7 +270,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         width: '50%'
     },
-    buttonAvatar:{
+    buttonAvatar: {
         backgroundColor: '#495D32',
         width: '100%',
         height: '35%',
@@ -268,14 +278,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
-        
-        
+
+
     },
-    buttonTextAvatar:{
+    buttonTextAvatar: {
         color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
-        
+
     },
     buttonsContainer: {
         flexDirection: 'row',
