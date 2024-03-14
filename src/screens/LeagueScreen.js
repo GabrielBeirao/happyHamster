@@ -1,3 +1,4 @@
+import LottieView from 'lottie-react-native';
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 
@@ -17,7 +18,10 @@ const battleWinners = [
 export default function LeagueScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>League Screen</Text>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>League Screen</Text>
+        <LottieView source={require('../assets/animations/trophyAnimation.json')} autoPlay loop style={styles.trophyLottieAnimation}></LottieView>
+      </View>
       <Text style={styles.header}>Ranking Geral</Text>
       <View style={styles.rankingContainer}>
         {hamsters.map((hamster, index) => (
@@ -30,9 +34,10 @@ export default function LeagueScreen() {
       </View>
       <Text style={styles.header}>Resultado da Batalha</Text>
       <View style={styles.battleContainer}>
+        <LottieView source={require('../assets/animations/battleAnimation.json')} autoPlay loop style={styles.battleLottieAnimation}></LottieView>
         {battleWinners.map((winner) => (
           <View key={winner.id} style={styles.winnerEntry}>
-            <Image source={winner.imageUrl} style={styles.winnerImage} />
+            <Image source={winner.imageUrl} style={styles.winnerImage} />  
             <Text style={styles.winnerName}>{winner.name}</Text>
           </View>
         ))}
@@ -48,10 +53,14 @@ const styles = StyleSheet.create({
     padding: 25,
     marginTop: 20
   },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   title: {
     fontSize: 25,
     fontWeight: 'bold',
-    marginBottom: 20
   },
   header: {
     fontSize: 22,
@@ -83,6 +92,7 @@ const styles = StyleSheet.create({
     borderWidth: 2, // Adicionando uma borda
     borderColor: 'black', // Cor da borda
     padding: 10, // Adicionando espaço interno para os componentes
+    alignItems: 'center', // Alinha verticalmente
   },
   winnerEntry: {
     alignItems: 'center',
@@ -96,6 +106,14 @@ const styles = StyleSheet.create({
   winnerName: {
 
   },
+  trophyLottieAnimation: {
+    width: 80,
+    height: 80,
+    marginRight: 10,
+  },
+  battleLottieAnimation: {
+    width: 100,
+    height: 100,
+  },
 });
-
 
