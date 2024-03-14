@@ -28,25 +28,35 @@ export default function ProfileScreen() {
             {user && (
                 <>
                 <View style={styles.userInfoContainer}>
+
+                <View style={styles.userInfoRow}>
                     <Text style={styles.titleUserInfo}>Name: </Text>
                     <Text style={styles.label}>{user.username || 'Não fornecido'}</Text>
+                </View>
 
+                <View style={styles.userInfoRow}>
                     <Text style={styles.titleUserInfo}>Email: </Text>
-                    <Text>{user.email || 'Não fornecido'}</Text>
+                    <Text style={styles.userInfo}>{user.email || 'Não fornecido'}</Text>
+                </View>
 
+                <View style={styles.userInfoRow}>
                     <Text style={styles.titleUserInfo}>Nickname: </Text>
-                    <Text>{user.nickname || 'Não fornecido'}</Text>
+                    <Text style={styles.userInfo}>{user.nickname || 'Não fornecido'}</Text>
+                </View>
                     
-
+                <View style={styles.userInfoRow}>
                     <Text style={styles.titleUserInfo}>Gênero: </Text>
-                    <Text>{user.genere || 'Não fornecido'} </Text>
+                    <Text style={styles.userInfo}>{user.genere || 'Não fornecido'} </Text>
+                </View>
                     
-
+                <View style={styles.userInfoRow}>
                     <Text style={styles.titleUserInfo}>Data de Nascimento: </Text>
-                    <Text>{user.birthdate || 'Não fornecido'}</Text>
+                    <Text style={styles.userInfo}>{user.birthdate || 'Não fornecido'}</Text>
+                </View>
                     
 
                     <Text style={styles.titleUserInfo}>Imagem do Avatar:</Text>
+
                 </View>
                     <View style={styles.imageContainer}>
                     
@@ -80,9 +90,15 @@ const styles = StyleSheet.create({
     titleUserInfo: {
         fontWeight: "bold"
     },
+    userInfoRow: {
+        flexDirection: 'row',
+        marginBottom: 5, // Ajuste o espaçamento conforme necessário
+    },
     userInfoContainer: {
         marginBottom: 20,
-        marginTop: 20
+        marginTop: 20,
+        paddingStart: '8%',
+        paddingEnd: '8%'
     },
     label: {
         fontWeight: 'normal',
@@ -94,7 +110,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         paddingVertical: 12,
         alignItems: 'center',
-        marginTop: 25,
+        marginTop: 15,
     },
     buttonText: {
         color: 'white',
