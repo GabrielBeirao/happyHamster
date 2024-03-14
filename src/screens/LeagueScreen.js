@@ -1,6 +1,8 @@
 import LottieView from 'lottie-react-native';
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity  } from 'react-native';
+import * as Animatable from 'react-native-animatable';
+
 
 const hamsters = [
   { id: 1, name: 'Hamster A', score: 98 },
@@ -20,28 +22,39 @@ export default function LeagueScreen() {
     <View style={styles.container}>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>League Screen</Text>
-        <LottieView source={require('../assets/animations/trophyAnimation.json')} autoPlay loop style={styles.trophyLottieAnimation}></LottieView>
+        <LottieView source={require('../assets/animations/trophyAnimation.json')} autoPlay loop style={styles.trophyLottieAnimation} />
       </View>
-      <Text style={styles.header}>Ranking Geral</Text>
-      <View style={styles.rankingContainer}>
-        {hamsters.map((hamster, index) => (
-          <View key={hamster.id} style={styles.hamsterEntry}>
-            <Text style={styles.rankText}>{index + 1}</Text>
-            <Text style={styles.nameText}>{hamster.name}</Text>
-            <Text style={styles.scoreText}>{hamster.score}</Text>
-          </View>
-        ))}
-      </View>
-      <Text style={styles.header}>Resultado da Batalha</Text>
-      <View style={styles.battleContainer}>
-        <LottieView source={require('../assets/animations/battleAnimation.json')} autoPlay loop style={styles.battleLottieAnimation}></LottieView>
-        {battleWinners.map((winner) => (
-          <View key={winner.id} style={styles.winnerEntry}>
-            <Image source={winner.imageUrl} style={styles.winnerImage} />  
-            <Text style={styles.winnerName}>{winner.name}</Text>
-          </View>
-        ))}
-      </View>
+
+      <Animatable.View animation="bounceInLeft" delay={500}>
+        <Text style={styles.header}>Ranking Geral</Text>
+        <View style={styles.rankingContainer}>
+          {hamsters.map((hamster, index) => (
+            <View key={hamster.id} style={styles.hamsterEntry}>
+              <Text style={styles.rankText}>{index + 1}</Text>
+              <Text style={styles.nameText}>{hamster.name}</Text>
+              <Text style={styles.scoreText}>{hamster.score}</Text>
+            </View>
+          ))}
+        </View>
+      </Animatable.View>
+
+      <Animatable.View animation="bounceInRight" delay={500}>
+        <Text style={styles.header}>Resultado da Batalha</Text>
+        <View style={styles.battleContainer}>
+          {battleWinners.map((winner, index) => (
+            <View key={winner.id} style={styles.winnerEntry}>
+              <Image source={winner.imageUrl} style={styles.winnerImage} />
+              <Text style={styles.winnerName}>{winner.name}</Text>
+              {index === Math.floor(battleWinners.length / 2) && <LottieView source={require('../assets/animations/battleAnimation.json')} autoPlay loop style={styles.battleLottieAnimation} />}
+            </View>
+          ))}
+        </View>
+      </Animatable.View>
+
+      <TouchableOpacity style={styles.button} >
+        <Text style={styles.buttonText}>Challange a friend!</Text>
+      </TouchableOpacity>
+
     </View>
   );
 };
@@ -91,6 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     borderWidth: 2, // Adicionando uma borda
     borderColor: 'black', // Cor da borda
+    borderRadius: 10,
     padding: 10, // Adicionando espaço interno para os componentes
     alignItems: 'center', // Alinha verticalmente
   },
@@ -107,7 +121,7 @@ const styles = StyleSheet.create({
 
   },
   trophyLottieAnimation: {
-    width: 80,
+    width: 70,
     height: 80,
     marginRight: 10,
   },
@@ -115,5 +129,19 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
+  button: {
+    backgroundColor: '#495D32',
+    width: '100%',
+    borderRadius: 4,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 15,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  }
+  
 });
 
