@@ -1,6 +1,5 @@
-
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProfileScreen() {
@@ -27,12 +26,43 @@ export default function ProfileScreen() {
             <Text style={styles.title}>Profile Information</Text>
             {user && (
                 <>
-                    <Text style={styles.label}>Name: {user.username || 'Não fornecido'}</Text>
-                    <Text style={styles.label}>Email: {user.email || 'Não fornecido'}</Text>
-                    <Text style={styles.label}>Nickname: {user.nickname || 'Não fornecido'}</Text>
-                    <Text style={styles.label}>Gênero: {user.genere || 'Não fornecido'}</Text>
-                    <Text style={styles.label}>Data de Nascimento: {user.birthdate || 'Não fornecido'}</Text>
-                    <Text style={styles.label}>Imagem do Avatar: {user.avatarImage || 'Não fornecido'}</Text>
+                <View style={styles.userInfoContainer}>
+
+                <View style={styles.userInfoRow}>
+                    <Text style={styles.titleUserInfo}>Name: </Text>
+                    <Text style={styles.label}>{user.username || 'Não fornecido'}</Text>
+                </View>
+
+                <View style={styles.userInfoRow}>
+                    <Text style={styles.titleUserInfo}>Email: </Text>
+                    <Text style={styles.userInfo}>{user.email || 'Não fornecido'}</Text>
+                </View>
+
+                <View style={styles.userInfoRow}>
+                    <Text style={styles.titleUserInfo}>Nickname: </Text>
+                    <Text style={styles.userInfo}>{user.nickname || 'Não fornecido'}</Text>
+                </View>
+                    
+                <View style={styles.userInfoRow}>
+                    <Text style={styles.titleUserInfo}>Gênero: </Text>
+                    <Text style={styles.userInfo}>{user.genere || 'Não fornecido'} </Text>
+                </View>
+                    
+                <View style={styles.userInfoRow}>
+                    <Text style={styles.titleUserInfo}>Data de Nascimento: </Text>
+                    <Text style={styles.userInfo}>{user.birthdate || 'Não fornecido'}</Text>
+                </View>
+                    
+
+                    <Text style={styles.titleUserInfo}>Imagem do Avatar:</Text>
+
+                </View>
+                    <View style={styles.imageContainer}>
+                    
+                        <Image style={styles.image} source={user.avatarImage || 'Não fornecido'}></Image> 
+                        
+                        
+                    </View> 
 
                 </>
             )}
@@ -56,8 +86,22 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
     },
+    titleUserInfo: {
+        fontWeight: "bold"
+    },
+    userInfoRow: {
+        flexDirection: 'row',
+        marginBottom: 5, // Ajuste o espaçamento conforme necessário
+    },
     userInfoContainer: {
         marginBottom: 20,
+        marginTop: 20,
+        paddingStart: '8%',
+        paddingEnd: '8%'
+    },
+    label: {
+        fontWeight: 'normal',
+        
     },
     button: {
         backgroundColor: '#495D32',
@@ -65,10 +109,26 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         paddingVertical: 12,
         alignItems: 'center',
+        marginTop: 15,
     },
     buttonText: {
         color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
     },
+    image: {
+        width: '100%',
+        height: '100%',
+    },
+    imageContainer: {
+        width: 250,
+        height: 250,
+        borderRadius: 150,
+        backgroundColor: '#E0E0E0',
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden',
+        alignSelf: 'center',
+        //marginTop: 10,
+    }
 });
