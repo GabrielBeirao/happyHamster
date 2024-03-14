@@ -1,6 +1,6 @@
 import LottieView from 'lottie-react-native';
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity  } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Modal, FlatList, Button, Alert } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
 
@@ -17,7 +17,39 @@ const battleWinners = [
   { id: 2, name: 'Hamster B', imageUrl: require('../assets/images/avatarList/15.png') },
 ];
 
+const friendsList = [
+  { id: 1, name: 'Friend 1', imageUrl: require('../assets/images/avatarList/1.png') },
+  { id: 2, name: 'Friend 2', imageUrl: require('../assets/images/avatarList/2.png') },
+  { id: 3, name: 'Friend 3', imageUrl: require('../assets/images/avatarList/3.png') },
+  { id: 4, name: 'Friend 4', imageUrl: require('../assets/images/avatarList/4.png') },
+  { id: 5, name: 'Friend 5', imageUrl: require('../assets/images/avatarList/5.png') },
+  { id: 6, name: 'Friend 6', imageUrl: require('../assets/images/avatarList/6.png') }
+]
+
+
 export default function LeagueScreen() {
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const inviteFriend = (friendName) => {
+    Alert.alert('Challenge invited!');
+  };
+
+  const renderFriendItem = ({ item }) => (
+    <View style={styles.friendItem}>
+      <Image source={item.imageUrl} style={styles.friendImage} />
+      <Text style={styles.friendName}>{item.name}</Text>
+      <Button title="Invite" onPress={() => inviteFriend(item.name)} style={styles.inviteButton}/>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
@@ -51,9 +83,27 @@ export default function LeagueScreen() {
         </View>
       </Animatable.View>
 
-      <TouchableOpacity style={styles.button} >
+      <TouchableOpacity style={styles.button} onPress={openModal}>
         <Text style={styles.buttonText}>Challange a friend!</Text>
       </TouchableOpacity>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <FlatList
+              data={friendsList}
+              renderItem={renderFriendItem}
+              keyExtractor={(item) => item.id.toString()}
+            />
+            <Button title="Close" onPress={closeModal} />
+          </View>
+        </View>
+      </Modal>
 
     </View>
   );
@@ -141,7 +191,40 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#EFFDE1',
+    borderRadius: 10,
+    padding: 20,
+    width: '80%',
+    maxHeight: '80%',
+  },
+  friendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  friendImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  friendName: {
+    flex: 1,
+  },
+  inviteButton: {
+    backgroundColor: '#FCF4D7',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 4,
   }
-  
+
 });
 
