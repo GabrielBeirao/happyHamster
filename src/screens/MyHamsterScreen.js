@@ -1,18 +1,53 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Image, Pressable, StyleSheet, Text, Modal, TouchableOpacity, FlatList, Alert, Button } from 'react-native';
+import { View, Image, Pressable, StyleSheet, Text, Modal, TouchableOpacity, FlatList, Alert, Button, TextInput } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { StatusBar } from 'expo-status-bar';
-import * as Animatable from 'react-native-animatable'
+import * as Animatable from 'react-native-animatable';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function MyHamsterScreen() {
-  
-  const hamsterList = [
-    { id: 1, name: 'Hamster A', genere: genereHamster, minWalk: "Min walk: " + 12, maxWalk: "Max walk: " + 105 + "Km",  imageUrl: require('../assets/images/avatarList/8.png') },
-    { id: 2, name: 'Hamster B', genere: genereHamster, minWalk: "Min walk: " + 25, maxWalk: "Max walk: " + 95 + "Km",  imageUrl: require('../assets/images/avatarList/7.png') },
-    { id: 3, name: nameHamster, genere: genereHamster, minWalk: "Min walk: " + 17, maxWalk: "Max walk: " + 112 + "Km",  imageUrl: imgHamster }
-  ];
-
+  const [nameHamster, setNameHamster] = useState('');
+  const [genereHamster, setGenereHamster] = useState('');
+  const [imgHamster, setImgHamster] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [hamsterList, setHamsterList] = useState([]);
+  const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedHamsterData, setSelectedHamsterData] = useState(null);
+  const avatarList = [
+    require('../assets/images/avatarList/1.png'),
+    require('../assets/images/avatarList/2.png'),
+    require('../assets/images/avatarList/3.png'),
+    require('../assets/images/avatarList/4.png'),
+    require('../assets/images/avatarList/5.png'),
+    require('../assets/images/avatarList/6.png'),
+    require('../assets/images/avatarList/7.png'),
+    require('../assets/images/avatarList/8.png'),
+    require('../assets/images/avatarList/9.png'),
+    require('../assets/images/avatarList/10.png'),
+    require('../assets/images/avatarList/11.png'),
+    require('../assets/images/avatarList/12.png'),
+    require('../assets/images/avatarList/13.png'),
+    require('../assets/images/avatarList/14.png'),
+    require('../assets/images/avatarList/15.png'),
+    require('../assets/images/avatarList/16.png'),
+    require('../assets/images/avatarList/17.png'),
+    require('../assets/images/avatarList/18.png'),
+    require('../assets/images/avatarList/19.png'),
+    require('../assets/images/avatarList/20.png'),
+    require('../assets/images/avatarList/21.png')
+  ]
+
+  const chooseFromAvatarList = (avatar) => {
+    setSelectedAvatar(avatar);
+
+  };
+
+  const renderAvatarItem = ({ item }) => (
+    <TouchableOpacity onPress={() => chooseFromAvatarList(item)}>
+      <Image source={item} style={styles.avatarItem} />
+    </TouchableOpacity>
+  );
 
   const openModal = () => {
     setModalVisible(true);
@@ -22,7 +57,16 @@ export default function MyHamsterScreen() {
     setModalVisible(false);
   };
 
-  const registerNewHamster = (newHamster) => {
+  const saveNewHamster = () => {
+    const newHamster = { id: hamsterList.length + 1, name: nameHamster, genere: genereHamster, imageUrl: selectedAvatar };
+    setHamsterList([...hamsterList, newHamster]);
+    setNameHamster('');
+    setGenereHamster('');
+    setSelectedImage(selectedAvatar);
+    setSelectedHamsterData({ name: nameHamster, genere: genereHamster });
+    closeModal();
+    // Salvar os dados no AsyncStorage
+    AsyncStorage.setItem('hamsterList', JSON.stringify([...hamsterList, newHamster]));
     Alert.alert('New hamster added!');
   };
 
@@ -33,20 +77,26 @@ export default function MyHamsterScreen() {
       </View>
 
       <Animatable.View animation="bounceInLeft" delay={500}>
-        <Text style={styles.header}>My hamsters</Text> 
-        <View style={styles.myHamsterContainer}>
-        <View style={styles.rankingContainer}>
-          {hamsterList.map((hamster, index) => (
-            <View key={hamster.id} style={styles.hamsterEntry}>
-              <Image source={hamster.imageUrl} style={styles.hamsterImage} />
-              <Text style={styles.rankText}>{index + 1}</Text>
-              <Text style={styles.nameText}>{hamster.name}</Text>
-              <Text style={styles.scoreText}>{hamster.minWalk}</Text>
-              <Text style={styles.scoreText}>{hamster.maxWalk}</Text>
+        <Text style={styles.header}>My hamsters</Text>
+  
+          {/* {selectedImage && (
+            <View style={styles.selectedHamsterContainer}>
+              <Image source={selectedImage} style={styles.selectedHamsterImage} />
+              <Text style={styles.selectedHamsterName}>{selectedHamsterData.name}</Text>
+              <Text style={styles.selectedHamsterGenere}>{selectedHamsterData.genere}</Text>
             </View>
-          ))}
-        </View>
-        </View>
+          )} */}
+
+          <View style={styles.myHamsterContainer}>
+            {hamsterList.map((hamster, index) => (
+              <View key={hamster.id} style={styles.hamsterContainer}>
+                <Image source={hamster.imageUrl} style={styles.hamsterImage} />
+                <Text style={styles.nameText}>Name: {hamster.name}  </Text>
+                <Text style={styles.genereText}>Genere: {hamster.genere}</Text>
+              </View>
+            ))}
+          </View>
+        
       </Animatable.View>
 
       <TouchableOpacity style={styles.button} onPress={openModal}>
@@ -61,6 +111,27 @@ export default function MyHamsterScreen() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
+            <Text>Hamster name / nickname:</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={setNameHamster}
+              value={nameHamster}
+            />
+            <Text>Hamster genere:</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={setGenereHamster}
+              value={genereHamster}
+            />
+            <Text>Select a avatar:</Text>
+            <FlatList
+              data={avatarList}
+              renderItem={renderAvatarItem}
+              keyExtractor={(item, index) => index.toString()}
+              numColumns={3}
+              contentContainerStyle={styles.avatarListContainer}
+            />
+            <Button title="Save new hamster" onPress={saveNewHamster} />
             <Button title="Close" onPress={closeModal} />
           </View>
         </View>
@@ -76,6 +147,15 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 25,
     marginTop: 20
+  },
+  hamsterContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    borderWidth: 2, // Adicionando uma borda
+     borderColor: 'black', // Cor da borda
+     borderRadius: 10,
+     padding: 10,
   },
   titleContainer: {
     flexDirection: 'row',
@@ -97,11 +177,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  rankingContainer: {
-    marginBottom: 20,
-    paddingStart: '2%',
-    paddingEnd: '5%'
-  },
+
   hamsterEntry: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -111,20 +187,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   nameText: {
-
+    fontWeight: 'bold'
   },
   scoreText: {
 
   },
-  myHamsterContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    borderWidth: 2, // Adicionando uma borda
-    borderColor: 'black', // Cor da borda
-    borderRadius: 10,
-    padding: 10, // Adicionando espaço interno para os componentes
-    alignItems: 'center', // Alinha verticalmente
-  },
+  // myHamsterContainer: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-around',
+  //   borderWidth: 2, // Adicionando uma borda
+  //   borderColor: 'black', // Cor da borda
+  //   borderRadius: 10,
+  //   padding: 10, // Adicionando espaço interno para os componentes
+  //   alignItems: 'center', // Alinha verticalmente
+  // },
   winnerEntry: {
     alignItems: 'center',
   },
@@ -153,6 +229,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
     marginTop: 15,
+    marginBottom: 10, // Adicionando margem inferior
   },
   buttonText: {
     color: 'white',
@@ -191,5 +268,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 4,
-  }
+  },
+  input: {
+    borderBottomWidth: 1,
+    height: 40,
+    marginBottom: 12,
+    fontSize: 16
+  },
+  avatarListContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20
+  },
+  avatarItem: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    margin: 5,
+  },
+  selectedHamsterContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  selectedHamsterImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  selectedHamsterName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  selectedHamsterGenere: {
+    fontSize: 16,
+  },
+
+
 });
