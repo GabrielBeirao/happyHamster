@@ -1,108 +1,195 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Image, Pressable, StyleSheet, Text } from 'react-native';
+import { View, Image, Pressable, StyleSheet, Text, Modal, TouchableOpacity, FlatList, Alert, Button } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as Animatable from 'react-native-animatable'
 
 export default function MyHamsterScreen() {
-  const [showAnimation, setShowAnimation] = useState(false);
-  const [distance, setDistance] = useState(0);
-  const giftRef = useRef();
+  
+  const hamsterList = [
+    { id: 1, name: 'Hamster A', genere: genereHamster, minWalk: "Min walk: " + 12, maxWalk: "Max walk: " + 105 + "Km",  imageUrl: require('../assets/images/avatarList/8.png') },
+    { id: 2, name: 'Hamster B', genere: genereHamster, minWalk: "Min walk: " + 25, maxWalk: "Max walk: " + 95 + "Km",  imageUrl: require('../assets/images/avatarList/7.png') },
+    { id: 3, name: nameHamster, genere: genereHamster, minWalk: "Min walk: " + 17, maxWalk: "Max walk: " + 112 + "Km",  imageUrl: imgHamster }
+  ];
 
-  const animationDuration = 10000; // 10 segundos
+  const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    if (showAnimation) {
-      giftRef.current?.play();
-      const timeout = setTimeout(() => {
-        setShowAnimation(false);
-      }, animationDuration);
-      return () => clearTimeout(timeout);
-    }
-  }, [showAnimation]);
+  const openModal = () => {
+    setModalVisible(true);
+  };
 
-  const startAnimation = () => {
-    setShowAnimation(true);
-    setDistance(0);
-    const interval = setInterval(() => {
-      setDistance(prevDistance => prevDistance + 1);
-    }, 1000); // Incrementando a distância a cada segundo
-    setTimeout(() => {
-      clearInterval(interval); // Parando a contagem quando a animação terminar
-    }, animationDuration);
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const registerNewHamster = (newHamster) => {
+    Alert.alert('New hamster added!');
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Animatable.Image animation="flipInY" source={require("../assets/images/LogoHappyHamster.png")} style={styles.logo} />
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>My Hamster Screen</Text>
       </View>
-      <View style={styles.animationContainer}>
-        {showAnimation && (
-          <View style={styles.counterContainer}>
-            <Text style={styles.counterText}>{distance} metros</Text>
+
+      <Animatable.View animation="bounceInLeft" delay={500}>
+        <Text style={styles.header}>My hamsters</Text> 
+        <View style={styles.myHamsterContainer}>
+        <View style={styles.rankingContainer}>
+          {hamsterList.map((hamster, index) => (
+            <View key={hamster.id} style={styles.hamsterEntry}>
+              <Image source={hamster.imageUrl} style={styles.hamsterImage} />
+              <Text style={styles.rankText}>{index + 1}</Text>
+              <Text style={styles.nameText}>{hamster.name}</Text>
+              <Text style={styles.scoreText}>{hamster.minWalk}</Text>
+              <Text style={styles.scoreText}>{hamster.maxWalk}</Text>
+            </View>
+          ))}
+        </View>
+        </View>
+      </Animatable.View>
+
+      <TouchableOpacity style={styles.button} onPress={openModal}>
+        <Text style={styles.buttonText}>Register a new Hamster</Text>
+      </TouchableOpacity>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Button title="Close" onPress={closeModal} />
           </View>
-        )}
-        <LottieView
-          ref={giftRef}
-          style={[styles.animation, showAnimation ? {} : { display: 'none' }]}
-          source={require("../assets/animations/hamsterAnimation.json")}
-          loop={false}
-        />
-        {!showAnimation && (
-          <Pressable style={styles.button} onPress={startAnimation}>
-            <Text style={styles.buttonText}>Iniciar</Text>
-          </Pressable>
-        )}
-      </View>
-      <StatusBar style="auto" />
+        </View>
+      </Modal>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#FCF4D7',
+    flex: 1,
+    padding: 25,
+    marginTop: 20
+  },
+  titleContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    marginBottom: 20,
   },
-  logoContainer: {
-    marginBottom: 50, // Ajuste para garantir espaço para o logo
+  title: {
+    fontSize: 25,
+    fontWeight: 'bold',
   },
-  logo: {
-    width: 200,
-    height: 200,
+  hamsterImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginBottom: 5,
   },
-  animationContainer: {
+  header: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  rankingContainer: {
+    marginBottom: 20,
+    paddingStart: '2%',
+    paddingEnd: '5%'
+  },
+  hamsterEntry: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+  },
+  rankText: {
+    fontWeight: 'bold',
+  },
+  nameText: {
+
+  },
+  scoreText: {
+
+  },
+  myHamsterContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    borderWidth: 2, // Adicionando uma borda
+    borderColor: 'black', // Cor da borda
+    borderRadius: 10,
+    padding: 10, // Adicionando espaço interno para os componentes
+    alignItems: 'center', // Alinha verticalmente
+  },
+  winnerEntry: {
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20,
   },
-  animation: {
-    width: 300,
-    height: 300,
+  winnerImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginBottom: 5,
+  },
+  winnerName: {
+
+  },
+  trophyLottieAnimation: {
+    width: 70,
+    height: 80,
+    marginRight: 10,
+  },
+  battleLottieAnimation: {
+    width: 100,
+    height: 100,
   },
   button: {
-    marginTop: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: 'black',
-    borderRadius: 5,
+    backgroundColor: '#495D32',
+    width: '100%',
+    borderRadius: 4,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 15,
   },
   buttonText: {
-    color: '#FFC800',
+    color: 'white',
     fontSize: 18,
-  },
-  counterContainer: {
-    position: 'absolute',
-    top: 350, // Alteramos para garantir o espaçamento abaixo do Lottie
-    marginBottom: 30, // Adicionamos um espaçamento abaixo do contador
-  },
-  counterText: {
-    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 130,
-    bottom: '40%'
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#EFFDE1',
+    borderRadius: 10,
+    padding: 20,
+    width: '80%',
+    maxHeight: '80%',
+  },
+  friendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  friendImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  friendName: {
+    flex: 1,
+  },
+  inviteButton: {
+    backgroundColor: '#FCF4D7',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 4,
+  }
 });
