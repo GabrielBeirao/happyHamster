@@ -38,6 +38,24 @@ export default function MyHamsterScreen() {
     require('../assets/images/avatarList/21.png')
   ]
 
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('user');
+        if (userData) {
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar usuário:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   const chooseFromAvatarList = (avatar) => {
     setSelectedAvatar(avatar);
 
@@ -78,25 +96,50 @@ export default function MyHamsterScreen() {
 
       <Animatable.View animation="bounceInLeft" delay={500}>
         <Text style={styles.header}>My hamsters</Text>
-  
-          {/* {selectedImage && (
+
+        {/* {selectedImage && (
             <View style={styles.selectedHamsterContainer}>
               <Image source={selectedImage} style={styles.selectedHamsterImage} />
               <Text style={styles.selectedHamsterName}>{selectedHamsterData.name}</Text>
               <Text style={styles.selectedHamsterGenere}>{selectedHamsterData.genere}</Text>
             </View>
           )} */}
+        <View style={styles.hamsterContainer}>
+          {user && (
+            <>
 
-          <View style={styles.myHamsterContainer}>
-            {hamsterList.map((hamster, index) => (
-              <View key={hamster.id} style={styles.hamsterContainer}>
-                <Image source={hamster.imageUrl} style={styles.hamsterImage} />
-                <Text style={styles.nameText}>Name: {hamster.name}  </Text>
-                <Text style={styles.genereText}>Genere: {hamster.genere}</Text>
+              <View style={styles.imageContainer}>
+                <Image style={styles.hamsterImage} source={user.avatarImage || 'Não fornecido'}></Image>
               </View>
-            ))}
-          </View>
-        
+
+              <View style={styles.userInfoRow}>
+                <Text style={styles.nameTextTitle}>Name: </Text>
+                <Text style={styles.nameText}>{user.nickname || 'Não fornecido'}</Text>
+              </View>
+
+              <View style={styles.userInfoRow}>
+                <Text style={styles.genereTextTitle}>Gênero: </Text>
+                <Text style={styles.userInfo}>{user.genere || 'Não fornecido'} </Text>
+              </View>
+
+            </>
+          )}
+        </View>
+
+        <View style={styles.myHamsterContainer}>
+          {hamsterList.map((hamster, index) => (
+            <View key={hamster.id} style={styles.hamsterContainer}>
+              <Image source={hamster.imageUrl} style={styles.hamsterImage} />
+              
+              <Text style={styles.nameTextTitle}>Name: </Text>
+              <Text>{hamster.name}  </Text>
+
+              <Text style={styles.nameTextTitle}>Genere: </Text>
+              <Text>{hamster.genere}</Text>
+            </View>
+          ))}
+        </View>
+
       </Animatable.View>
 
       <TouchableOpacity style={styles.button} onPress={openModal}>
@@ -131,6 +174,14 @@ export default function MyHamsterScreen() {
               numColumns={3}
               contentContainerStyle={styles.avatarListContainer}
             />
+
+            {/* <TouchableOpacity style={styles.button}>
+              <Text>Save new hamster</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button}>
+              <Text>Close</Text>
+            </TouchableOpacity> */}
             <Button title="Save new hamster" onPress={saveNewHamster} />
             <Button title="Close" onPress={closeModal} />
           </View>
@@ -148,14 +199,19 @@ const styles = StyleSheet.create({
     padding: 25,
     marginTop: 20
   },
+  userInfoRow: {
+    flexDirection: 'row',
+    marginBottom: 5,
+    marginRight: 10
+},
   hamsterContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
     borderWidth: 2, // Adicionando uma borda
-     borderColor: 'black', // Cor da borda
-     borderRadius: 10,
-     padding: 10,
+    borderColor: 'black', // Cor da borda
+    borderRadius: 10,
+    padding: 10,
   },
   titleContainer: {
     flexDirection: 'row',
@@ -171,6 +227,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     marginBottom: 5,
+    marginRight: 10,
   },
   header: {
     fontSize: 22,
@@ -186,7 +243,13 @@ const styles = StyleSheet.create({
   rankText: {
     fontWeight: 'bold',
   },
+  nameTextTitle: {
+    fontWeight: 'bold'
+  },
   nameText: {
+    flexDirection: 'row'
+  },
+  genereTextTitle: {
     fontWeight: 'bold'
   },
   scoreText: {
