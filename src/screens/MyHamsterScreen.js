@@ -3,6 +3,7 @@ import { View, Image, Pressable, StyleSheet, Text, Modal, TouchableOpacity, Flat
 import LottieView from 'lottie-react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as Animatable from 'react-native-animatable';
+import mockHamsterHistory from './mockHamsterHistory';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function MyHamsterScreen() {
@@ -10,10 +11,12 @@ export default function MyHamsterScreen() {
   const [genereHamster, setGenereHamster] = useState('');
   const [imgHamster, setImgHamster] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisibleHistory, setModalVisibleHistory] = useState(false);
   const [hamsterList, setHamsterList] = useState([]);
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedHamsterData, setSelectedHamsterData] = useState(null);
+  const [hamsterHistory, setHamsterHistory] = useState([]);
   const avatarList = [
     require('../assets/images/avatarList/1.png'),
     require('../assets/images/avatarList/2.png'),
@@ -75,6 +78,33 @@ export default function MyHamsterScreen() {
     setModalVisible(false);
   };
 
+  const openHistoryModal = () => {
+    setModalVisibleHistory(true);
+    // Lógica para carregar o histórico do hamster do AsyncStorage
+    fetchHamsterHistory();
+  };
+
+  const closeHistoryModal = () => {
+    setModalVisibleHistory(false);
+  };
+
+  const fetchHamsterHistory = () => {
+    setHamsterHistory(mockHamsterHistory);
+  };
+
+  // Função para carregar o histórico do hamster do AsyncStorage
+  // const fetchHamsterHistory = async () => {
+  //   try {
+  //     const historyData = await AsyncStorage.getItem('hamsterHistory');
+  //     if (historyData) {
+  //       const parsedHistory = JSON.parse(historyData);
+  //       setHamsterHistory(parsedHistory);
+  //     }
+  //   } catch (error) {
+  //     console.error('Erro ao buscar o histórico do hamster:', error);
+  //   }
+  // };
+
   const saveNewHamster = () => {
     const newHamster = { id: hamsterList.length + 1, name: nameHamster, genere: genereHamster, imageUrl: selectedAvatar };
     setHamsterList([...hamsterList, newHamster]);
@@ -130,7 +160,7 @@ export default function MyHamsterScreen() {
           {hamsterList.map((hamster, index) => (
             <View key={hamster.id} style={styles.hamsterContainer}>
               <Image source={hamster.imageUrl} style={styles.hamsterImage} />
-              
+
               <Text style={styles.nameTextTitle}>Name: </Text>
               <Text>{hamster.name}  </Text>
 
@@ -142,9 +172,15 @@ export default function MyHamsterScreen() {
 
       </Animatable.View>
 
-      <TouchableOpacity style={styles.button} onPress={openModal}>
-        <Text style={styles.buttonText}>Register a new Hamster</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={openModal}>
+          <Text style={styles.buttonText}>Register a new Hamster</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={openHistoryModal}>
+          <Text style={styles.buttonText}>My hamster history</Text>
+        </TouchableOpacity>
+      </View>
 
       <Modal
         animationType="slide"
@@ -188,6 +224,34 @@ export default function MyHamsterScreen() {
         </View>
       </Modal>
 
+      {/* Modal do histórico do hamster */}
+      <Modal
+  animationType="slide"
+  transparent={true}
+  visible={modalVisibleHistory}
+  onRequestClose={closeHistoryModal}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>Hamster History</Text>
+      {/* {user && <Text>Name: {user.nickname}</Text>} */}
+      <FlatList
+        data={hamsterHistory}
+        renderItem={({ item }) => (
+          <View style={styles.historyItem}>
+            {/* Exibe os detalhes do histórico do hamster */}
+            {user && <Text>Name: {user.nickname}</Text>}
+            <Text>Date: {item.date}</Text>
+            <Text>Event: {item.event}</Text>
+          </View>
+        )}
+        keyExtractor={(item, index) => index.toString()}
+      />
+      <Button title="Close" onPress={closeHistoryModal} />
+    </View>
+  </View>
+</Modal>
+
     </View>
   );
 }
@@ -203,7 +267,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 5,
     marginRight: 10
-},
+  },
   hamsterContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -276,18 +340,13 @@ const styles = StyleSheet.create({
   winnerName: {
 
   },
-  trophyLottieAnimation: {
-    width: 70,
-    height: 80,
-    marginRight: 10,
-  },
-  battleLottieAnimation: {
-    width: 100,
-    height: 100,
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   button: {
     backgroundColor: '#495D32',
-    width: '100%',
+    width: '48%',
     borderRadius: 4,
     paddingVertical: 12,
     alignItems: 'center',
@@ -296,7 +355,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 'bold',
   },
   modalContainer: {
@@ -311,6 +370,17 @@ const styles = StyleSheet.create({
     padding: 20,
     width: '80%',
     maxHeight: '80%',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  historyItem: {
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingBottom: 10,
   },
   friendItem: {
     flexDirection: 'row',
