@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Image, Pressable, StyleSheet, Text, Modal, TouchableOpacity, FlatList, Alert, Button, TextInput } from 'react-native';
+import { View, Image, Pressable, StyleSheet, Text, Modal, TouchableOpacity, FlatList, Alert, Button, TextInput,} from 'react-native';
+import { ProgressBar } from 'react-native-paper';
 import LottieView from 'lottie-react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as Animatable from 'react-native-animatable';
 import mockHamsterHistory from './mockHamsterHistory';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustomProgressBar from '../components/statusBar/CustomProgressBar'
 
 export default function MyHamsterScreen() {
   const [nameHamster, setNameHamster] = useState('');
@@ -17,6 +19,14 @@ export default function MyHamsterScreen() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedHamsterData, setSelectedHamsterData] = useState(null);
   const [hamsterHistory, setHamsterHistory] = useState([]);
+  const [rewardModalVisible, setRewardModalVisible] = useState(false);
+
+  // Atualize o estado para incluir o progresso máximo das recompensas
+  const [rewardProgress, setRewardProgress] = useState([
+    { currentProgress: 100, maxProgress: 100 }, // Recompensa 1 - definida como 100 para mostrar a reward
+    { currentProgress: 60, maxProgress: 100 }, // Recompensa 2 - colocar 0 em todas depois para a lógica correta
+    { currentProgress: 30, maxProgress: 100 }, // Recompensa 3 - colocar 0 em todas depois para a lógica correta
+  ]);
   const avatarList = [
     require('../assets/images/avatarList/1.png'),
     require('../assets/images/avatarList/2.png'),
@@ -58,6 +68,32 @@ export default function MyHamsterScreen() {
 
     fetchUser();
   }, []);
+
+
+
+
+
+// Atualize a função para incrementar o progresso de uma recompensa
+const incrementRewardProgress = (index, incrementAmount) => {
+  const updatedProgress = [...rewardProgress];
+  updatedProgress[index].currentProgress += incrementAmount;
+  // Garante que o progresso não ultrapasse o máximo
+  updatedProgress[index].currentProgress = Math.min(updatedProgress[index].currentProgress, updatedProgress[index].maxProgress);
+  setRewardProgress(updatedProgress);
+};
+
+
+// Atualize a função para desbloquear uma recompensa
+const unlockReward = (rewardIndex) => {
+  // Verifica se o progresso atingiu o máximo
+  if (rewardProgress[rewardIndex].currentProgress === rewardProgress[rewardIndex].maxProgress) {
+    Alert.alert('Congratulations!', 'You have unlocked a new food for your hamster!');
+    // Aqui você pode adicionar a lógica para recompensar o usuário com o item desbloqueado
+  } else {
+    // Caso o progresso ainda não tenha atingido o máximo
+    Alert.alert('Not yet!', 'Complete the progress to unlock the reward.');
+  }
+};
 
   const chooseFromAvatarList = (avatar) => {
     setSelectedAvatar(avatar);
@@ -180,7 +216,12 @@ export default function MyHamsterScreen() {
         <TouchableOpacity style={styles.button} onPress={openHistoryModal}>
           <Text style={styles.buttonText}>My hamster history</Text>
         </TouchableOpacity>
+
       </View>
+      
+      <TouchableOpacity style={styles.button} onPress={() => setRewardModalVisible(true)}>
+          <Text style={styles.buttonText}>Rewards</Text>
+        </TouchableOpacity>
 
       <Modal
         animationType="slide"
@@ -226,28 +267,76 @@ export default function MyHamsterScreen() {
 
       {/* Modal do histórico do hamster */}
       <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisibleHistory}
+        onRequestClose={closeHistoryModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Hamster History</Text>
+            {/* {user && <Text>Name: {user.nickname}</Text>} */}
+            <FlatList
+              data={hamsterHistory}
+              renderItem={({ item }) => (
+                <View style={styles.historyItem}>
+                  {/* Exibe os detalhes do histórico do hamster */}
+                  {user && <Text>Name: {user.nickname}</Text>}
+                  <Text>Date: {item.date}</Text>
+                  <Text>Event: {item.event}</Text>
+                </View>
+              )}
+              keyExtractor={(item, index) => index.toString()}
+            />
+            <Button title="Close" onPress={closeHistoryModal} />
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal Rewards */}
+      <Modal
   animationType="slide"
   transparent={true}
-  visible={modalVisibleHistory}
-  onRequestClose={closeHistoryModal}
+  visible={rewardModalVisible}
+  onRequestClose={() => setRewardModalVisible(false)}
 >
   <View style={styles.modalContainer}>
     <View style={styles.modalContent}>
-      <Text style={styles.modalTitle}>Hamster History</Text>
-      {/* {user && <Text>Name: {user.nickname}</Text>} */}
-      <FlatList
-        data={hamsterHistory}
-        renderItem={({ item }) => (
-          <View style={styles.historyItem}>
-            {/* Exibe os detalhes do histórico do hamster */}
-            {user && <Text>Name: {user.nickname}</Text>}
-            <Text>Date: {item.date}</Text>
-            <Text>Event: {item.event}</Text>
-          </View>
-        )}
-        keyExtractor={(item, index) => index.toString()}
-      />
-      <Button title="Close" onPress={closeHistoryModal} />
+      <Text style={styles.modalTitle}>Rewards</Text>
+      {/* Barra de progresso para a primeira recompensa */}
+      <View style={styles.progressContainer}>
+  <Text>Complete 1km to unlock the reward</Text>
+  <CustomProgressBar progress={rewardProgress[0].currentProgress} maxProgress={rewardProgress[0].maxProgress} />
+  <TouchableOpacity
+    style={styles.getRewardButton}
+    onPress={() => unlockReward(0)}
+  >
+    <Text style={styles.getRewardButtonText}>Get Reward</Text>
+  </TouchableOpacity>
+</View>
+
+<View style={styles.progressContainer}>
+  <Text>Complete 5km to unlock the reward</Text>
+  <CustomProgressBar progress={rewardProgress[1].currentProgress} maxProgress={rewardProgress[1].maxProgress} />
+  <TouchableOpacity
+    style={styles.getRewardButton}
+    onPress={() => unlockReward(1)}
+  >
+    <Text style={styles.getRewardButtonText}>Get Reward</Text>
+  </TouchableOpacity>
+</View>
+
+<View style={styles.progressContainer}>
+  <Text>Complete 10km to unlock the reward</Text>
+  <CustomProgressBar progress={rewardProgress[2].currentProgress} maxProgress={rewardProgress[2].maxProgress} />
+  <TouchableOpacity
+    style={styles.getRewardButton}
+    onPress={() => unlockReward(2)}
+  >
+    <Text style={styles.getRewardButtonText}>Get Reward</Text>
+  </TouchableOpacity>
+</View>
+      <Button title="Close" onPress={() => setRewardModalVisible(false)} />
     </View>
   </View>
 </Modal>
@@ -435,6 +524,27 @@ const styles = StyleSheet.create({
   },
   selectedHamsterGenere: {
     fontSize: 16,
+  },
+  progressContainer: {
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  progressBar: {
+    width: '100%', // A largura deve ser ajustada conforme necessário
+    height: 10, // A altura deve ser ajustada conforme necessário
+    backgroundColor: '#f2f2f2',
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  getRewardButton: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  getRewardButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 
 
