@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Image, Pressable, StyleSheet, Text, Modal, TouchableOpacity, FlatList, Alert, Button, TextInput,} from 'react-native';
+import { View, Image, Pressable, StyleSheet, Text, Modal, TouchableOpacity, FlatList, Alert, Button, TextInput, } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import LottieView from 'lottie-react-native';
 import { StatusBar } from 'expo-status-bar';
@@ -20,6 +20,11 @@ export default function MyHamsterScreen() {
   const [selectedHamsterData, setSelectedHamsterData] = useState(null);
   const [hamsterHistory, setHamsterHistory] = useState([]);
   const [rewardModalVisible, setRewardModalVisible] = useState(false);
+  const [alertModalVisible, setAlertModalVisible] = useState(false);
+  const [alertModalVisible1, setAlertModalVisible1] = useState(false);
+  const [alertModalVisible2, setAlertModalVisible2] = useState(false);
+  const [alertModalVisible3, setAlertModalVisible3] = useState(false);
+  const [rewardIndex, setRewardIndex] = useState(0);
 
   // Atualize o estado para incluir o progresso máximo das recompensas
   const [rewardProgress, setRewardProgress] = useState([
@@ -73,27 +78,71 @@ export default function MyHamsterScreen() {
 
 
 
-// Atualize a função para incrementar o progresso de uma recompensa
-const incrementRewardProgress = (index, incrementAmount) => {
-  const updatedProgress = [...rewardProgress];
-  updatedProgress[index].currentProgress += incrementAmount;
-  // Garante que o progresso não ultrapasse o máximo
-  updatedProgress[index].currentProgress = Math.min(updatedProgress[index].currentProgress, updatedProgress[index].maxProgress);
-  setRewardProgress(updatedProgress);
-};
+  // Atualize a função para incrementar o progresso de uma recompensa
+  const incrementRewardProgress = (index, incrementAmount) => {
+    const updatedProgress = [...rewardProgress];
+    updatedProgress[index].currentProgress += incrementAmount;
+    // Garante que o progresso não ultrapasse o máximo
+    updatedProgress[index].currentProgress = Math.min(updatedProgress[index].currentProgress, updatedProgress[index].maxProgress);
+    setRewardProgress(updatedProgress);
+  };
 
 
-// Atualize a função para desbloquear uma recompensa
-const unlockReward = (rewardIndex) => {
-  // Verifica se o progresso atingiu o máximo
-  if (rewardProgress[rewardIndex].currentProgress === rewardProgress[rewardIndex].maxProgress) {
-    Alert.alert('Congratulations!', 'You have unlocked a new food for your hamster!');
-    // Aqui você pode adicionar a lógica para recompensar o usuário com o item desbloqueado
-  } else {
-    // Caso o progresso ainda não tenha atingido o máximo
-    Alert.alert('Not yet!', 'Complete the progress to unlock the reward.');
-  }
-};
+  const unlockReward = (rewardIndex) => {
+    // Verifica se o progresso atingiu o máximo
+    if (rewardProgress[rewardIndex].currentProgress === rewardProgress[rewardIndex].maxProgress) {
+      showRewardModal(rewardIndex); // Exibe a modal de recompensa
+    } else {
+      // Caso o progresso ainda não tenha atingido o máximo
+      showAlertModal(); // Exibe a modal de alerta
+    }
+  };
+
+
+  // Substitua as funções de mostrar e ocultar alertas para atualizar o estado único
+  const showAlertModal = () => {
+    setAlertModalVisible(true);
+  };
+
+  // Inclua esta função para fechar a modal de alerta
+  const hideAlertModal = () => {
+    setAlertModalVisible(false);
+  };
+
+  // Função para fechar o modal de recompensa
+  const hideRewardModal = () => {
+    setRewardModalVisible(false);
+  };
+
+  // Função para exibir o modal de recompensa
+  const showRewardModal = () => {
+    setRewardModalVisible(true);
+  };
+
+
+  const showAlertModal1 = () => {
+    setAlertModalVisible1(true);
+  };
+
+  const hideAlertModal1 = () => {
+    setAlertModalVisible1(false);
+  };
+
+  const showAlertModal2 = () => {
+    setAlertModalVisible2(true);
+  };
+
+  const hideAlertModal2 = () => {
+    setAlertModalVisible2(false);
+  };
+
+  const showAlertModal3 = () => {
+    setAlertModalVisible3(true);
+  };
+
+  const hideAlertModal3 = () => {
+    setAlertModalVisible3(false);
+  };
 
   const chooseFromAvatarList = (avatar) => {
     setSelectedAvatar(avatar);
@@ -218,10 +267,10 @@ const unlockReward = (rewardIndex) => {
         </TouchableOpacity>
 
       </View>
-      
-      <TouchableOpacity style={styles.button} onPress={() => setRewardModalVisible(true)}>
-          <Text style={styles.buttonText}>Rewards</Text>
-        </TouchableOpacity>
+
+      <TouchableOpacity style={styles.buttonRewards} onPress={() => setRewardModalVisible(true)}>
+        <Text style={styles.buttonText}>Rewards</Text>
+      </TouchableOpacity>
 
       <Modal
         animationType="slide"
@@ -295,51 +344,174 @@ const unlockReward = (rewardIndex) => {
 
       {/* Modal Rewards */}
       <Modal
-  animationType="slide"
-  transparent={true}
-  visible={rewardModalVisible}
-  onRequestClose={() => setRewardModalVisible(false)}
->
-  <View style={styles.modalContainer}>
-    <View style={styles.modalContent}>
-      <Text style={styles.modalTitle}>Rewards</Text>
-      {/* Barra de progresso para a primeira recompensa */}
-      <View style={styles.progressContainer}>
-  <Text>Complete 1km to unlock the reward</Text>
-  <CustomProgressBar progress={rewardProgress[0].currentProgress} maxProgress={rewardProgress[0].maxProgress} />
-  <TouchableOpacity
-    style={styles.getRewardButton}
-    onPress={() => unlockReward(0)}
-  >
-    <Text style={styles.getRewardButtonText}>Get Reward</Text>
-  </TouchableOpacity>
-</View>
+        animationType="slide"
+        transparent={true}
+        visible={rewardModalVisible}
+        onRequestClose={() => setRewardModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Rewards</Text>
+            {/* Barra de progresso para a primeira recompensa */}
+            <View style={styles.progressContainer}>
+              <Text>Complete 1km to unlock the reward</Text>
+              <CustomProgressBar progress={rewardProgress[0].currentProgress} maxProgress={rewardProgress[0].maxProgress} />
+              <TouchableOpacity
+                style={styles.getRewardButton}
+                onPress={() => {
+                  setAlertModalVisible(true); // Defina a variável de estado correta para a primeira recompensa
+                  setRewardIndex(0); // Defina o índice da recompensa para a primeira recompensa
+                }}
+              >
+                <Text style={styles.getRewardButtonText}>Get Reward</Text>
+              </TouchableOpacity>
+              {/* Incluindo Lottie e mensagem de "Not yet!" */}
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={alertModalVisible}
+                onRequestClose={hideAlertModal}
+              >
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                  <View style={{ backgroundColor: '#fff', padding: 20, borderRadius: 10 }}>
+                    {/* Condicional para exibir o Lottie adequado */}
+                    {rewardProgress[rewardIndex].currentProgress === rewardProgress[rewardIndex].maxProgress ? (
+                      <>
+                        <LottieView
+                          source={require('../assets/animations/Congratulations.json')}
+                          autoPlay
+                          loop={true}
+                          style={{ width: 200, height: 200 }}
+                        />
+                        <Text>Congratulations!</Text>
+                        {/* <Text>You have unlocked a new food for your hamster!</Text> */}
+                      </>
+                    ) : (
+                      <>
+                        <LottieView
+                          source={require('../assets/animations/NotYet.json')}
+                          autoPlay
+                          loop={true}
+                          style={{ width: 200, height: 200 }}
+                        />
+                        <Text>Not yet!</Text>
+                        {/* <Text>Complete the progress to unlock the reward.</Text> */}
+                      </>
+                    )}
+                    <TouchableOpacity onPress={hideAlertModal}>
+                      <Text>OK</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
+            </View>
 
-<View style={styles.progressContainer}>
-  <Text>Complete 5km to unlock the reward</Text>
-  <CustomProgressBar progress={rewardProgress[1].currentProgress} maxProgress={rewardProgress[1].maxProgress} />
-  <TouchableOpacity
-    style={styles.getRewardButton}
-    onPress={() => unlockReward(1)}
-  >
-    <Text style={styles.getRewardButtonText}>Get Reward</Text>
-  </TouchableOpacity>
-</View>
+            <View style={styles.progressContainer}>
+              <Text>Complete 5km to unlock the reward</Text>
+              <CustomProgressBar progress={rewardProgress[1].currentProgress} maxProgress={rewardProgress[1].maxProgress} />
+              <TouchableOpacity
+                style={styles.getRewardButton}
+                onPress={() => {
+                  setAlertModalVisible(true); // Defina a variável de estado correta para a primeira recompensa
+                  setRewardIndex(1); // Defina o índice da recompensa para a primeira recompensa
+                }}
+              >
+                <Text style={styles.getRewardButtonText}>Get Reward</Text>
+              </TouchableOpacity>
+              {/* Incluindo Lottie e mensagem de "Not yet!" */}
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={alertModalVisible}
+                onRequestClose={hideAlertModal}
+              >
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                  <View style={{ backgroundColor: '#fff', padding: 20, borderRadius: 10 }}>
+                    {/* Condicional para exibir o Lottie adequado */}
+                    {rewardProgress[rewardIndex].currentProgress === rewardProgress[rewardIndex].maxProgress ? (
+                      <>
+                        <LottieView
+                          source={require('../assets/animations/Congratulations.json')}
+                          autoPlay
+                          loop={true}
+                          style={{ width: 200, height: 200 }}
+                        />
+                        <Text>Congratulations!</Text>
+                      </>
+                    ) : (
+                      <>
+                        <LottieView
+                          source={require('../assets/animations/NotYet.json')}
+                          autoPlay
+                          loop={true}
+                          style={{ width: 200, height: 200 }}
+                        />
+                        <Text>Not yet!</Text>
+                      </>
+                    )}
+                    <TouchableOpacity onPress={hideAlertModal}>
+                      <Text>OK</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
+            </View>
 
-<View style={styles.progressContainer}>
-  <Text>Complete 10km to unlock the reward</Text>
-  <CustomProgressBar progress={rewardProgress[2].currentProgress} maxProgress={rewardProgress[2].maxProgress} />
-  <TouchableOpacity
-    style={styles.getRewardButton}
-    onPress={() => unlockReward(2)}
-  >
-    <Text style={styles.getRewardButtonText}>Get Reward</Text>
-  </TouchableOpacity>
-</View>
-      <Button title="Close" onPress={() => setRewardModalVisible(false)} />
-    </View>
-  </View>
-</Modal>
+            <View style={styles.progressContainer}>
+              <Text>Complete 10km to unlock the reward</Text>
+              <CustomProgressBar progress={rewardProgress[2].currentProgress} maxProgress={rewardProgress[2].maxProgress} />
+              <TouchableOpacity
+                style={styles.getRewardButton}
+                onPress={() => {
+                  setAlertModalVisible(true); // Defina a variável de estado correta para a primeira recompensa
+                  setRewardIndex(2); // Defina o índice da recompensa para a primeira recompensa
+                }}
+              >
+                <Text style={styles.getRewardButtonText}>Get Reward</Text>
+              </TouchableOpacity>
+              {/* Incluindo Lottie e mensagem de "Not yet!" */}
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={alertModalVisible}
+                onRequestClose={hideAlertModal}
+              >
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                  <View style={{ backgroundColor: '#fff', padding: 20, borderRadius: 10 }}>
+                    {/* Condicional para exibir o Lottie adequado */}
+                    {rewardProgress[rewardIndex].currentProgress === rewardProgress[rewardIndex].maxProgress ? (
+                      <>
+                        <LottieView
+                          source={require('../assets/animations/Congratulations.json')}
+                          autoPlay
+                          loop={true}
+                          style={{ width: 200, height: 200 }}
+                        />
+                        <Text>Congratulations!</Text>
+                      </>
+                    ) : (
+                      <>
+                        <LottieView
+                          source={require('../assets/animations/NotYet.json')}
+                          autoPlay
+                          loop={true}
+                          style={{ width: 200, height: 200 }}
+                        />
+                        <Text>Not yet!</Text>
+                      </>
+                    )}
+                    <TouchableOpacity onPress={hideAlertModal}>
+                      <Text>OK</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
+            </View>
+
+            <Button title="Close" onPress={() => setRewardModalVisible(false)} />
+          </View>
+        </View>
+      </Modal>
 
     </View>
   );
@@ -436,6 +608,15 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#495D32',
     width: '48%',
+    borderRadius: 4,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 15,
+    marginBottom: 10, // Adicionando margem inferior
+  },
+  buttonRewards: {
+    backgroundColor: '#495D32',
+    width: '100%',
     borderRadius: 4,
     paddingVertical: 12,
     alignItems: 'center',
